@@ -8,7 +8,7 @@ import dl_translate as dlt
 import nltk
 
 class WebLanguage:
-    def __init__(self, folder_path, output_folder, src_lang, tgt_lang, excluded_words=[], excluded_tags=['script', 'style'], verbose=False, progress=True):
+    def __init__(self, folder_path: str, output_folder: str, src_lang: str, tgt_lang: str, excluded_words: list[str]=[], excluded_tags: list[str]=['script', 'style'], verbose: bool=False, progress: bool=True):
         self.folder_path = folder_path
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang
@@ -35,6 +35,8 @@ class WebLanguage:
 
     def _translate_text(self, text):
         sents = nltk.tokenize.sent_tokenize(text, "english")
+        print(self.src_lang)
+        print(self.tgt_lang)
         translated_text = " ".join(self.mt.translate(sents, source=self.src_lang, target=self.tgt_lang))
         return translated_text
 
