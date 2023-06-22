@@ -7,8 +7,19 @@ import shutil
 import dl_translate as dlt
 import nltk
 
+
 class WebLanguage:
-    def __init__(self, folder_path: str, output_folder: str, src_lang: str, tgt_lang: str, excluded_words: list[str]=[], excluded_tags: list[str]=['script', 'style'], verbose: bool=False, progress: bool=True):
+    def __init__(
+        self,
+        folder_path: str,
+        output_folder: str,
+        src_lang: str,
+        tgt_lang: str,
+        excluded_words: list[str] = [],
+        excluded_tags: list[str] = ["script", "style"],
+        verbose: bool = False,
+        progress: bool = True,
+    ):
         self.folder_path = folder_path
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang
@@ -22,22 +33,24 @@ class WebLanguage:
     def _get_device(self):
         if torch.backends.mps.is_available():
             if self.verbose:
-                print('[WL] using MPS')
-            return 'mps'
+                print("[WL] using MPS")
+            return "mps"
         elif torch.cuda.is_available():
             if self.verbose:
-                print('[WL] using CUDA')
-            return 'cuda'
+                print("[WL] using CUDA")
+            return "cuda"
         else:
             if self.verbose:
-                print('[WL] using AUTO, MPS + CUDA unavailable')
-            return 'auto'
+                print("[WL] using AUTO, MPS + CUDA unavailable")
+            return "auto"
 
     def _translate_text(self, text):
         sents = nltk.tokenize.sent_tokenize(text, "english")
         print(self.src_lang)
         print(self.tgt_lang)
-        translated_text = " ".join(self.mt.translate(sents, source=self.src_lang, target=self.tgt_lang))
+        translated_text = " ".join(
+            self.mt.translate(sents, source=self.src_lang, target=self.tgt_lang)
+        )
         return translated_text
 
     def _translate_attributes(self, element):
@@ -66,33 +79,33 @@ class WebLanguage:
 
     def _check_and_create_output_folder(self):
         if not os.path.isdir(self.folder_path):
-            print('Error: input path does not exist')
+            print("Error: input path does not exist")
             exit(0)
 
         if os.path.isdir(self.output_folder):
-            override = input('Output path already exists. Override? (y/N) ')
-            if not ((override.strip().lower() == 'y') or (override.strip().lower() == 'yes')):
+            override = input("Output path already exists. Override? (y/N) ")
+            if not ((override.strip().lower() == "y") or (override.strip().lower() == "yes")):
                 exit(0)
             else:
-                print('Overriding.')
+                print("Overriding.")
         else:
             os.mkdir(self.output_folder)
+
+    def _translate_files_recursive(self, src_path, dst_path):
+        for file_name in os.listdir(src_path):
+            file_path = os.path.join(src_path, file_name)
+            dst_file_path = os.path.join(dst_path, file_name)
+
+            if os.path.isfile(file_path) and file_name.endswith(".html"):
+                shutil.copy(file_path, dst_file_path)
+                self._translate_html_file(dst_file_path)
+            elif os.path.isdir(file_path):
+                new_dst_path = os.path.join(dst_path, file_name)
+                os.mkdir(new_dst_path)
+                self._translate_files_recursive(file_path, new_dst_path)
 
     def translate_html_files(self):
         self._check_and_create_output_folder()
 
-        files_to_translate = [file_name for file_name in os.listdir(self.folder_path) if file_name.endswith(".html")]
-        print('Translating. This may take a while.')
-        if self.progress:
-            with tqdm(total=len(files_to_translate), desc="Translating HTML files") as pbar:
-                for file_name in files_to_translate:
-                    shutil.copy(os.path.join(self.folder_path, file_name), os.path.join(self.output_folder, file_name))
-                    file_path = os.path.join(self.output_folder, file_name)
-                    self._translate_html_file(file_path)
-                    pbar.update(1)
-        else:
-            for file_name in files_to_translate:
-                shutil.copy(os.path.join(self.folder_path, file_name), os.path.join(self.output_folder, file_name))
-                file_path = os.path.join(self.output_folder, file_name)
-                self._translate_html_file(file_path)
-                pbar.update(1)
+        self._translate_files_recursive(self.folder_path, self.output_folder)
+        print("Translation complete.")
