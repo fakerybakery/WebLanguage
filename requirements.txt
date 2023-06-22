@@ -1,0 +1,6 @@
+dl-translate
+tqdm
+beautifulsoup4
+torch
+nltk
+PyYAML
