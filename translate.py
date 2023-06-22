@@ -1,5 +1,6 @@
 # todo import config from YAML
 # todo translate javascript
+# todo format string
 print('1: Importing Modules. This may take a moment.')
 import warnings
 warnings.filterwarnings("ignore")
@@ -56,7 +57,7 @@ def translate_html_file(file_path, src_lang, tgt_lang):
                 element.string.replace_with(translated_text)
         translate_attributes(element, src_lang, tgt_lang)
     with open(file_path, "w") as file:
-        file.write(soup.prettify())
+        file.write(str(soup))
 
 def translate(text, src_lang, tgt_lang):
     sents = nltk.tokenize.sent_tokenize(text, "english")
