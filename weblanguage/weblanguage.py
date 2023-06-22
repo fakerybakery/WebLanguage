@@ -62,7 +62,7 @@ class WebLanguage:
                     element[attr] = translated_attr
 
     def _translate_html_file(self, file_path):
-        with open(file_path, "r") as file:
+        with open(file_path, "r", encoding="utf-8") as file:
             content = file.read()
         soup = BeautifulSoup(content, "html.parser")
         elements = soup.find_all()
@@ -74,7 +74,7 @@ class WebLanguage:
                     translated_text = self._translate_text(element.string)
                     element.string.replace_with(translated_text)
             self._translate_attributes(element)
-        with open(file_path, "w") as file:
+        with open(file_path, "w", encoding="utf-8") as file:
             file.write(str(soup))
 
     def _check_and_create_output_folder(self):
