@@ -1,6 +1,6 @@
 # todo import config from YAML
 # todo translate javascript
-# todo format string
+# todo format html output
 print('1: Importing Modules. This may take a moment.')
 import warnings
 warnings.filterwarnings("ignore")
