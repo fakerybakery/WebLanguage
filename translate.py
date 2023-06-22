@@ -64,7 +64,7 @@ def translate(text, src_lang, tgt_lang):
     translated_text = " ".join(mt.translate(sents, source=src_lang, target=tgt_lang))
     return translated_text
 
-folder_path = "examples"
+folder_path = "example_html"
 src_lang = "en"
 tgt_lang = "fr"
 excluded_words = ["WebLanguage"]
