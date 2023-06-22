@@ -1,3 +1,5 @@
+# todo implement TQDM
+# todo implement JAVASCRIPT translation and CSS "content:" translation
 import torch
 import os
 import bs4
