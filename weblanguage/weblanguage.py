@@ -46,8 +46,6 @@ class WebLanguage:
 
     def _translate_text(self, text):
         sents = nltk.tokenize.sent_tokenize(text, "english")
-        print(self.src_lang)
-        print(self.tgt_lang)
         translated_text = " ".join(
             self.mt.translate(sents, source=self.src_lang, target=self.tgt_lang)
         )
@@ -62,7 +60,7 @@ class WebLanguage:
                     element[attr] = translated_attr
 
     def _translate_html_file(self, file_path):
-        with open(file_path, "r", encoding="utf-8") as file:
+        with open(file_path, "r", encoding="utf8", errors="ignore") as file:
             content = file.read()
         soup = BeautifulSoup(content, "html.parser")
         elements = soup.find_all()
@@ -74,7 +72,7 @@ class WebLanguage:
                     translated_text = self._translate_text(element.string)
                     element.string.replace_with(translated_text)
             self._translate_attributes(element)
-        with open(file_path, "w", encoding="utf-8") as file:
+        with open(file_path, "w", encoding="utf8", errors="ignore") as file:
             file.write(str(soup))
 
     def _check_and_create_output_folder(self):
@@ -83,10 +81,12 @@ class WebLanguage:
             exit(0)
 
         if os.path.isdir(self.output_folder):
-            override = input("Output path already exists. Override? (y/N) ")
+            override = input("Output path already exists. Delete folder? (y/N) ")
             if not ((override.strip().lower() == "y") or (override.strip().lower() == "yes")):
                 exit(0)
             else:
+                shutil.rmtree(self.output_folder)
+                os.mkdir(self.output_folder)
                 print("Overriding.")
         else:
             os.mkdir(self.output_folder)
